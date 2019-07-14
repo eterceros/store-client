@@ -1,0 +1,19 @@
+<div fxFlex *ngFor="let category of subCategories">
+  <h1>{{category.name}}</h1>
+  <mat-grid-list [cols]="1" bind-rowHeight="'200px'" [gutterSize]="'10px'">
+    <div *ngFor="let item of items"
+         [routerLink]="['/itemdetail', item.id]">
+      <div *ngIf="item.category === category.name">
+
+        <mat-grid-tile>
+          <img height="200px" data-src="data:image/png;base64,{{item.image}}"
+               alt={{item.name}}>
+          <mat-grid-tile-footer>
+            <h1 mat-line>{{item.name | uppercase}}</h1>
+          </mat-grid-tile-footer>
+
+        </mat-grid-tile>
+      </div>
+    </div>
+  </mat-grid-list>
+</div>

@@ -1,0 +1,45 @@
+<mat-tab-group class="tab-item">
+  <mat-tab label="Precio">
+    <article class="card-edit-item">
+      <mat-card>
+        <mat-card-header class="card-edit-item-header">
+          <mat-card-title>Editar Precio {{itemName}}</mat-card-title>
+        </mat-card-header>
+
+        <mat-card-content class="card-edit-item-content">
+          <form [formGroup]="formEditItem" class="card-edit-item-content-form">
+            <mat-form-field>
+              <input matInput placeholder="Precio"
+                     type="number"
+                     formControlName="price">
+            </mat-form-field>
+
+            <mat-form-field>
+              <input matInput placeholder="Identificador"
+                     type="text"
+                     formControlName="identifier">
+            </mat-form-field>
+
+            <mat-select formControlName="itemInstanceState" placeholder="Estado">
+              <mat-option *ngFor="let state of itemInstanceStates" [value]="state">
+                {{state}}
+              </mat-option>
+            </mat-select>
+
+          </form>
+        </mat-card-content>
+
+        <mat-card-actions class="card-edit-item-button">
+          <button mat-button (click)="editItem()">Edit</button>
+          <button mat-button [routerLink]="'/itemdetail/'+ itemId">Cancelar</button>
+        </mat-card-actions>
+      </mat-card>
+    </article>
+  </mat-tab>
+  <mat-tab label="Expense">
+    <app-expense-item></app-expense-item>
+  </mat-tab>
+  <mat-tab label="Feature">
+    <app-feature-item></app-feature-item>
+  </mat-tab>
+</mat-tab-group>

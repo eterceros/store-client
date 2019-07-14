@@ -1,0 +1,35 @@
+<article class="card-edit-item">
+  <mat-card>
+    <mat-card-header class="card-edit-item-header">
+      <mat-card-title>Edit Feature {{nameItem}}</mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content class="card-edit-item-content">
+      <form [formGroup]="formFeature" class="card-edit-item-content-form">
+        <mat-form-field>
+          <input matInput placeholder="Name"
+                 type="text"
+                 formControlName="name">
+        </mat-form-field>
+
+        <mat-form-field>
+          <input matInput placeholder="Value"
+                 type="text"
+                 formControlName="value">
+        </mat-form-field>
+
+        <mat-form-field>
+          <input matInput placeholder="Version"
+                 type="number"
+                 formControlName="version">
+        </mat-form-field>
+
+      </form>
+    </mat-card-content>
+
+    <mat-card-actions class="card-edit-item-button">
+      <button mat-button (click)="editFeature()">Edit</button>
+      <button mat-button [routerLink]="'/itemdetail/'+ itemId">Cancelar</button>
+    </mat-card-actions>
+  </mat-card>
+</article>

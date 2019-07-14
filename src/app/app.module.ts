@@ -48,6 +48,10 @@ import {LoginComponent} from './login/login.component';
 import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import {baseURL} from './shared/baseurl';
 import {HttpClientModule} from '@angular/common/http';
+import {InventoryComponent} from './inventario/inventory.component';
+import {UpdateItemComponent} from './update-item/update-item.component';
+import {ExpenseItemComponent} from './expense-item/expense-item.component';
+import {FeatureItemComponent} from './feature-item/feature-item.component';
 
 @NgModule({
   declarations: [
@@ -59,7 +63,11 @@ import {HttpClientModule} from '@angular/common/http';
     AboutComponent,
     HomeComponent,
     ContactComponent,
-    LoginComponent
+    LoginComponent,
+    InventoryComponent,
+    UpdateItemComponent,
+    ExpenseItemComponent,
+    FeatureItemComponent
   ],
   imports: [
     BrowserModule, BrowserAnimationsModule,

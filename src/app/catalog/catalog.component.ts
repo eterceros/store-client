@@ -18,7 +18,6 @@ export class CatalogComponent implements OnInit {
   ngOnInit(): void {
     this.itemService.getItems().subscribe(items => {
       this.items = items;
-      console.log(items);
     });
   }
 }
