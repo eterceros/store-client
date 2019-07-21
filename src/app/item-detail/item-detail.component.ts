@@ -24,7 +24,6 @@ export class ItemDetailComponent implements OnInit {
   next: number;
   public imagePath: string;
   public profit: number;
-  public showImage: boolean;
 
   private imageFile: File;
 
@@ -37,7 +36,6 @@ export class ItemDetailComponent implements OnInit {
               private sendBooleanService: SendBooleanService,
               private location: Location) {
     this.imagePath = '';
-    this.showImage = false;
   }
 
   ngOnInit() {
@@ -52,7 +50,6 @@ export class ItemDetailComponent implements OnInit {
               this.itemInstance.images = images;
               if (images && images.length > 0) {
                 this.itemInstance.featuredImage = images.filter(image => image.featured)[0].image;
-                this.showImage = !!itemInstance.featuredImage;
               }
             });
             this.setPrevNext(itemInstance.id);
@@ -79,8 +76,6 @@ export class ItemDetailComponent implements OnInit {
         this.imageService.save(this.image)
           .subscribe((value: any) => {
           });
-
-        this.showImage = true;
         this.ngOnInit();
       };
       reader.readAsDataURL(event.target.files[0]);
@@ -92,7 +87,6 @@ export class ItemDetailComponent implements OnInit {
       .subscribe((image) => {
       });
     this.itemInstance.images = null;
-    this.showImage = false;
   }
 
   goBack(): void {
