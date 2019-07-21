@@ -1,6 +1,7 @@
 import {Component, Inject, OnInit} from '@angular/core';
-import {Item} from '../shared/item';
-import {ItemService} from '../services/item.service';
+import {ItemInstance} from '../shared/item-instance';
+import {ItemInstanceService} from '../services/item-instance.service';
+import {ImageService} from '../services/image.service';
 
 @Component({
   selector: 'app-catalog',
@@ -9,15 +10,27 @@ import {ItemService} from '../services/item.service';
 })
 export class CatalogComponent implements OnInit {
 
-  items: Item[];
+  itemInstances: ItemInstance[];
 
-  constructor(private itemService: ItemService,
+  constructor(private instanceService: ItemInstanceService,
+              private imageService: ImageService,
               @Inject('BaseURL') private BaseURL) {
   }
 
   ngOnInit(): void {
-    this.itemService.getItems().subscribe(items => {
-      this.items = items;
-    });
+    this.instanceService.getAll().subscribe(itemInstances => {
+        itemInstances.forEach(itemInstance => {
+            this.imageService.getByItemInstanceId(itemInstance.id).subscribe(
+              images => {
+                itemInstance.images = images;
+                if (images && images.length > 0) {
+                  itemInstance.featuredImage = (itemInstance.images.filter(image => image.featured)[0]).image;
+                }
+              });
+          }
+        );
+        this.itemInstances = itemInstances;
+      }
+    );
   }
 }

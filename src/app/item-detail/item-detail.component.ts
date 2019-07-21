@@ -1,21 +1,24 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
-import {Item} from '../shared/item';
+import {Component, OnInit} from '@angular/core';
 import {ItemService} from '../services/item.service';
 import {ActivatedRoute, Params, Router} from '@angular/router';
 import {Location} from '@angular/common';
 import 'rxjs/add/operator/switchMap';
 import {SendBooleanService} from '../services/send-boolean.service';
 import {SendItemService} from '../services/send-item.service';
-import {Expense} from '../shared/expense';
+import {ImageService} from '../services/image.service';
+import {ItemInstanceService} from '../services/item-instance.service';
+import {ItemInstance} from '../shared/item-instance';
+import {Image} from '../shared/image';
 
 @Component({
   selector: 'app-item-detail',
   templateUrl: './item-detail.component.html',
   styleUrls: ['./item-detail.component.scss']
 })
-export class ItemDetailComponent implements OnInit, OnDestroy {
+export class ItemDetailComponent implements OnInit {
 
-  item: Item;
+  itemInstance: ItemInstance;
+  image: Image;
   itemIds: number[];
   prev: number;
   next: number;
@@ -23,9 +26,11 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
   public profit: number;
   public showImage: boolean;
 
-  private image: File;
+  private imageFile: File;
 
   constructor(private itemService: ItemService,
+              private itemInstanceService: ItemInstanceService,
+              private imageService: ImageService,
               private route: ActivatedRoute,
               private sendItemService: SendItemService,
               private router: Router,
@@ -36,37 +41,26 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.itemService.getItemIds().subscribe(items => {
+    this.itemInstanceService.getIds().subscribe(items => {
       this.itemIds = items;
       this.route.params
-        .switchMap((params: Params) => this.itemService.getItem(+params.id))
-        .subscribe(item => {
-          if (item) {
-            this.item = item;
-            this.setPrevNext(item.id);
-            this.sendBooleanService.sendBoolean(true);
-            this.sendItemService.sendItem(item);
-
-            this.loadExpenseItem(item.id);
-
-            this.showImage = !!item.image;
+        .switchMap((params: Params) => this.itemInstanceService.getById(+params.id))
+        .subscribe(itemInstance => {
+          if (itemInstance) {
+            this.itemInstance = itemInstance;
+            this.imageService.getByItemInstanceId(itemInstance.id).subscribe(images => {
+              this.itemInstance.images = images;
+              if (images && images.length > 0) {
+                this.itemInstance.featuredImage = images.filter(image => image.featured)[0].image;
+                this.showImage = !!itemInstance.featuredImage;
+              }
+            });
+            this.setPrevNext(itemInstance.id);
+            this.sendItemService.sendItemInstance(itemInstance);
           }
         });
     });
 
-  }
-
-  ngOnDestroy() {
-    this.sendBooleanService.sendBoolean(false);
-  }
-
-  private loadExpenseItem(id: number): void {
-    this.itemService.getItemExpense(id)
-      .subscribe((expense: Expense) => {
-        if (expense) {
-          this.profit = expense.itemInstance.profit;
-        }
-      });
   }
 
   public uploadImage(event: any): void {
@@ -74,30 +68,30 @@ export class ItemDetailComponent implements OnInit, OnDestroy {
 
     if (event.target.files && file) {
       const reader = new FileReader();
-      this.image = file;
+      this.imageFile = file;
 
       reader.onload = (progressEvent: ProgressEvent) => {
         this.imagePath = (progressEvent.target as FileReader).result.toString();
-        this.item.image = this.imagePath.substr(23, this.imagePath.length + 1);
+        this.image = new Image();
+        this.image.name = this.imageFile.name;
+        this.image.itemInstance = this.itemInstance;
+        this.image.image = this.imagePath.substr(23, this.imagePath.length + 1);
+        this.imageService.save(this.image)
+          .subscribe((value: any) => {
+          });
+
+        this.showImage = true;
+        this.ngOnInit();
       };
       reader.readAsDataURL(event.target.files[0]);
-
-      const uploadData: FormData = new FormData();
-      uploadData.append('file', this.image);
-
-      this.itemService.uploadImage(this.item.id, uploadData)
-        .subscribe((value: any) => {
-        });
-
-      this.showImage = true;
     }
   }
 
   public deleteImage(): void {
-    this.itemService.deleteImage(this.item.id)
+    this.itemService.deleteImage(this.itemInstance.id)
       .subscribe((image) => {
       });
-    this.item.image = null;
+    this.itemInstance.images = null;
     this.showImage = false;
   }
 

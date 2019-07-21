@@ -4,6 +4,7 @@ import {ItemService} from '../services/item.service';
 import {Item} from '../shared/item';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {FeatureInstance} from '../shared/feature-instance';
+import {ItemInstanceService} from '../services/item-instance.service';
 
 @Component({
   selector: 'app-feature-item',
@@ -21,6 +22,7 @@ export class FeatureItemComponent implements OnInit {
   private itemFeatureEdit: any;
 
   constructor(private itemService: ItemService,
+              private itemInstanceService: ItemInstanceService,
               private activeRouter: ActivatedRoute,
               private fb: FormBuilder) {
   }
@@ -39,7 +41,7 @@ export class FeatureItemComponent implements OnInit {
   }
 
   public itemListener(): void {
-    this.itemService.getItemIds().subscribe(items => {
+    this.itemInstanceService.getIds().subscribe(items => {
       this.itemIds = items;
       this.activeRouter.params
         .switchMap((params: Params) => this.itemService.getItemFeature(3))

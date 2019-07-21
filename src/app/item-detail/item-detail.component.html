@@ -6,17 +6,18 @@
      fxLayoutGap="10px"
      fxLayoutGap.xs="0">
   <div fxFlex="40">
-    <div fxFlex *ngIf="item">
+    <div fxFlex *ngIf="itemInstance">
       <mat-card>
         <mat-card-title-group>
           <mat-card-title>
-            <h3>{{item.name | uppercase}}</h3>
+            <h3>{{itemInstance.item.name | uppercase}}</h3>
           </mat-card-title>
         </mat-card-title-group>
         <a *ngIf="!showImage" type="button" (click)="fileInput.click()" style="cursor: pointer"><h1>Add image</h1></a>
-        <img *ngIf="showImage" matCardImage data-src="data:image/png;base64,{{item.image}}" alt={{item.name}}>
+        <img *ngIf="showImage" matCardImage data-src="data:image/png;base64,{{itemInstance.featuredImage}}"
+             alt={{itemInstance.item.name}}>
         <mat-card-content>
-          <p>{{item.description}}
+          <p>{{itemInstance.item.description}}
           </p>
 
           <h1>Utilidad: {{profit}}</h1>
@@ -27,7 +28,8 @@
           <button mat-button (click)="goBack()">BACK</button>
           <button mat-button (click)="onAction($event)">LIKE</button>
           <button mat-button (click)="onAction($event)">SHARE</button>
-          <button mat-button [routerLink]="['/itemEdit', item.id]">Editar<span class="fa fa-pencil fa-lg"></span>
+          <button mat-button [routerLink]="['/itemEdit', itemInstance.item.id]">Editar<span
+            class="fa fa-pencil fa-lg"></span>
           </button>
           <span class="flex-spacer"></span>
           <button mat-button [routerLink]="['/itemdetail/', next]"><span class="fa fa-chevron-right fa-lg"></span>
@@ -43,10 +45,10 @@
     </div>
   </div>
 
-  <div fxFlex="40" *ngIf="item && item.comments">
-    <h1>Comments</h1>
+  <div fxFlex="40" *ngIf="itemInstance && itemInstance.item.comments">
+    <h1>Commentarios</h1>
     <mat-list>
-      <mat-list-item *ngFor="let comment of item.comments">
+      <mat-list-item *ngFor="let comment of itemInstance.item.comments">
         <p matLine>{{comment.comment}}</p>
         <p matLine>{{comment.rating}} Stars</p>
         <p matLine>-- {{comment.author}} {{comment.date | date}}</p>

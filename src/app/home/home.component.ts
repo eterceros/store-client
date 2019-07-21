@@ -1,8 +1,9 @@
 import {Component, OnInit} from '@angular/core';
-import {Item} from '../shared/item';
-import {ItemService} from '../services/item.service';
 import {Employee} from '../shared/employee';
 import {EmployeeService} from '../services/employee.service';
+import {ItemInstance} from '../shared/item-instance';
+import {ItemInstanceService} from '../services/item-instance.service';
+import {ImageService} from '../services/image.service';
 
 @Component({
   selector: 'app-home',
@@ -11,16 +12,25 @@ import {EmployeeService} from '../services/employee.service';
 })
 export class HomeComponent implements OnInit {
 
-  item: Item;
+  itemInstance: ItemInstance;
   employee: Employee;
 
-  constructor(private itemService: ItemService,
+  constructor(private itemInstanceService: ItemInstanceService,
+              private imageService: ImageService,
               private employeeService: EmployeeService) {
   }
 
   ngOnInit() {
-    this.itemService.getFeaturedItem()
-      .subscribe(item => this.item = item);
+    this.itemInstanceService.getFeatured()
+      .subscribe(itemInstance => {
+        this.itemInstance = itemInstance;
+        this.imageService.getByItemInstanceId(itemInstance.id).subscribe(images => {
+          this.itemInstance.images = images;
+          if (images && images.length > 0) {
+            this.itemInstance.featuredImage = images.filter(image => image.featured)[0].image;
+          }
+        });
+      });
     this.employeeService.getFeaturedEmployee()
       .subscribe(employee => this.employee = employee);
   }

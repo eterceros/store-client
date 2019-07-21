@@ -1,74 +1,58 @@
-import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {SendItemService} from '../services/send-item.service';
-import {Subscription} from 'rxjs';
-import {Item} from '../shared/item';
 import {ActivatedRoute, Params} from '@angular/router';
 import {ItemService} from '../services/item.service';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {SendBooleanService} from '../services/send-boolean.service';
 import {ItemInstance} from '../shared/item-instance';
+import {ItemInstanceService} from '../services/item-instance.service';
 
 @Component({
   selector: 'app-update-item',
   templateUrl: './update-item.component.html',
   styleUrls: ['./update-item.component.scss']
 })
-export class UpdateItemComponent implements OnInit, OnDestroy {
-
-
-  public item: Item;
+export class UpdateItemComponent implements OnInit {
+  public itemInstance: ItemInstance;
   public itemId: number;
   public itemName: string;
   public itemInstanceState: string;
   public itemEdit: any;
-  public itemIds: number[];
   public formEditItem: FormGroup;
 
-  private sendItemSubscription: Subscription;
   const;
   itemInstanceStates = ['DISPONIBLE', 'VENDIDO', 'MANTENIMIENTO', 'EN_TRANSPORTE'];
 
   constructor(private sendItemService: SendItemService,
+              private itemInstanceService: ItemInstanceService,
               private itemService: ItemService,
               private sendBooleanService: SendBooleanService,
               private fb: FormBuilder,
               private activeRouter: ActivatedRoute) {
-    this.sendItemSubscription = new Subscription();
   }
 
   ngOnInit() {
-    this.itemListener();
     this.initForm();
-  }
-
-  ngOnDestroy() {
-    this.sendItemSubscription.unsubscribe();
+    this.activeRouter.params
+      .switchMap((params: Params) => this.itemInstanceService.getById(+params.id))
+      .subscribe(itemInstance => {
+        if (itemInstance) {
+          this.itemInstance = itemInstance;
+          this.itemId = itemInstance.id;
+          this.itemName = itemInstance.item.name;
+          this.itemInstanceState = itemInstance.itemInstanceState;
+          this.formFilling(itemInstance);
+        }
+      });
   }
 
   public editItem(): void {
     if (this.formEditItem.valid) {
-      this.itemService.updateItemInstance(this.item.id, this.formEditItem.value)
-        .subscribe((item: ItemInstance) => {
-          this.item = item.item;
+      this.itemInstanceService.update(this.itemInstance.id, this.formEditItem.value)
+        .subscribe((itemInstance: ItemInstance) => {
+          this.itemInstance = itemInstance;
         });
     }
-  }
-
-  public itemListener(): void {
-    this.itemService.getItemIds().subscribe(items => {
-      this.itemIds = items;
-      this.activeRouter.params
-        .switchMap((params: Params) => this.itemService.getItem(+params.id))
-        .subscribe(item => {
-          if (item) {
-            this.item = item;
-            this.itemId = item.id;
-            this.itemName = item.name;
-            this.itemInstanceState = item.itemInstanceState;
-            this.formFilling(item);
-          }
-        });
-    });
   }
 
   private initForm(): void {
@@ -80,11 +64,11 @@ export class UpdateItemComponent implements OnInit, OnDestroy {
     });
   }
 
-  private formFilling(item: Item): void {
+  private formFilling(itemInstance: ItemInstance): void {
     this.itemEdit = {
-      price: item.price,
-      identifier: item.identifier,
-      itemInstanceState: item.itemInstanceState
+      price: itemInstance.price,
+      identifier: itemInstance.identifier,
+      itemInstanceState: itemInstance.itemInstanceState
     };
 
     this.formEditItem.patchValue(this.itemEdit);

@@ -1,8 +1,8 @@
 import {Component, Inject, OnInit} from '@angular/core';
-import {Item} from '../shared/item';
-import {ItemService} from '../services/item.service';
 import {SubCategory} from '../shared/sub-category';
 import {SubCategoryService} from '../services/sub-category.service';
+import {ItemInstanceService} from '../services/item-instance.service';
+import {ItemInstance} from '../shared/item-instance';
 
 @Component({
   selector: 'app-inventory',
@@ -10,10 +10,10 @@ import {SubCategoryService} from '../services/sub-category.service';
   styleUrls: ['./inventory.component.scss']
 })
 export class InventoryComponent implements OnInit {
-  items: Item[];
+  items: ItemInstance[];
   subCategories: SubCategory[];
 
-  constructor(private itemService: ItemService, private subCategoryService: SubCategoryService,
+  constructor(private itemInstanceService: ItemInstanceService, private subCategoryService: SubCategoryService,
               @Inject('BaseURL') private BaseURL) {
   }
 
@@ -22,7 +22,7 @@ export class InventoryComponent implements OnInit {
       this.subCategories = subCategories;
       console.log(subCategories);
     });
-    this.itemService.getItemsInstances().subscribe(items => {
+    this.itemInstanceService.getAll().subscribe(items => {
       this.items = items;
       console.log(items);
     });

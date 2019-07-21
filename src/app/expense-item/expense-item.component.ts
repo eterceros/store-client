@@ -3,6 +3,7 @@ import {ItemService} from '../services/item.service';
 import {ActivatedRoute, Params} from '@angular/router';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {Expense} from '../shared/expense';
+import {ItemInstanceService} from '../services/item-instance.service';
 
 @Component({
   selector: 'app-expense-item',
@@ -19,7 +20,8 @@ export class ExpenseItemComponent implements OnInit {
 
   private itemExpenseEdit: any;
 
-  constructor(private itemService: ItemService,
+  constructor(private itemInstanceService: ItemInstanceService,
+              private itemService: ItemService,
               private activeRouter: ActivatedRoute,
               private fb: FormBuilder) {
   }
@@ -38,7 +40,7 @@ export class ExpenseItemComponent implements OnInit {
   }
 
   public itemListener(): void {
-    this.itemService.getItemIds().subscribe(items => {
+    this.itemInstanceService.getIds().subscribe(items => {
       this.itemIds = items;
       this.activeRouter.params
         .switchMap((params: Params) => this.itemService.getItemExpense(+params.id))
