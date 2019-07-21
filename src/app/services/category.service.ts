@@ -1,18 +1,16 @@
 import {Injectable} from '@angular/core';
 import {HttpClient} from '@angular/common/http';
-import {Observable} from 'rxjs';
-import {baseURL} from '../shared/baseurl';
 import {Category} from '../shared/category';
+import {GenericService} from './generic.service';
 
 @Injectable({
   providedIn: 'root'
 })
-export class CategoryService {
+export class CategoryService extends GenericService<Category> {
 
-  constructor(private http: HttpClient) {
-  }
+  resource = 'categories/';
 
-  getCategories(): Observable<Category[]> {
-    return this.http.get(baseURL + 'subCategories') as Observable<Category[]>;
+  constructor(http: HttpClient) {
+    super(http, 'categories/');
   }
 }
