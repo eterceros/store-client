@@ -15,12 +15,12 @@ export class ItemService {
   constructor(private http: HttpClient) {
   }
 
-  getItemExpense(id: number): Observable<Expense> {
-    return this.http.get(baseURL + 'expense/' + id) as Observable<Expense>;
+  getItemExpenses(id: number): Observable<Expense[]> {
+    return this.http.get(baseURL + 'expenses/iteminstances/' + id) as Observable<Expense[]>;
   }
 
   getItemFeature(id: number): Observable<FeatureInstance> {
-    return this.http.get(baseURL + 'featureinstances' + id) as Observable<FeatureInstance>;
+    return this.http.get(baseURL + 'featureinstances/' + id) as Observable<FeatureInstance>;
   }
 
   deleteImage(id: number): Observable<any> {

@@ -1,9 +1,11 @@
-import {Component, OnInit} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import {ItemService} from '../services/item.service';
-import {ActivatedRoute, Params} from '@angular/router';
+import {ActivatedRoute} from '@angular/router';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {Expense} from '../shared/expense';
 import {ItemInstanceService} from '../services/item-instance.service';
+import {Item} from '../shared/item';
+import {ItemInstance} from '../shared/item-instance';
 
 @Component({
   selector: 'app-expense-item',
@@ -12,8 +14,13 @@ import {ItemInstanceService} from '../services/item-instance.service';
 })
 export class ExpenseItemComponent implements OnInit {
 
-  public itemIds: number[];
-  public item: Expense;
+  @Input()
+  public itemInstance: ItemInstance;
+  displayedColumns: string[] = ['Tipo', 'Descripcion', 'Valor'];
+
+  public expense: Expense;
+  public expenses: Expense[];
+  public item: Item;
   public itemId: number;
   public nameItem: string;
   public formExpense: FormGroup;
@@ -28,7 +35,7 @@ export class ExpenseItemComponent implements OnInit {
 
   ngOnInit() {
     this.initForm();
-    this.itemListener();
+    this.loadExpenses();
   }
 
   public editExpense(): void {
@@ -39,19 +46,9 @@ export class ExpenseItemComponent implements OnInit {
     }
   }
 
-  public itemListener(): void {
-    this.itemInstanceService.getIds().subscribe(items => {
-      this.itemIds = items;
-      this.activeRouter.params
-        .switchMap((params: Params) => this.itemService.getItemExpense(+params.id))
-        .subscribe(expense => {
-          if (expense) {
-            this.item = expense;
-            this.itemId = expense.id;
-            this.nameItem = expense.itemInstance.item.name;
-            this.formFilling(expense);
-          }
-        });
+  public loadExpenses(): void {
+    this.itemService.getItemExpenses(this.itemInstance.id).subscribe(expenses => {
+      this.expenses = expenses;
     });
   }
 

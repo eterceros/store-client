@@ -37,7 +37,7 @@
     </article>
   </mat-tab>
   <mat-tab label="Expense">
-    <app-expense-item></app-expense-item>
+    <app-expense-item [itemInstance]="itemInstance" *ngIf="itemInstance"></app-expense-item>
   </mat-tab>
   <mat-tab label="Feature">
     <app-feature-item></app-feature-item>
